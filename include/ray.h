@@ -1,0 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ray.h                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cgajean <cgajean@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/13 11:04:24 by cgajean           #+#    #+#             */
+/*   Updated: 2026/01/21 16:58:53 by cgajean          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef RAY_H
+# define RAY_H
+
+# include <stdbool.h>
+# include "material.h"
+# include "types.h"
+
+typedef struct s_hit_info	(*t_ray_hit_fn[])(const t_ray *, const void*);
+
+struct s_ray
+{
+	t_real3	origin;
+	t_real3	dir;
+};
+
+struct s_hit_info
+{
+	bool		did_hit;
+	t_real		dst;
+	t_real3		hit_point;
+	t_real3		normal;
+	t_material	material;
+};
+
+void		init_ray(t_app *app, t_ray *ray, t_real x, t_real y);
+t_hit_info	ray_hit(t_bvh_elem_box *box, const t_ray *ray);
+
+t_hit_info	elem_inf_hit(t_scene *scene, t_ray *ray);
+
+t_real		closest_hit_dst_dbl(const t_real a, const t_real b);
+t_real		closest_hit_dst_sol2(t_sol2 sol);
+t_real		plane_dst(const t_ray *ray, const t_real3 normal, \
+												const t_real3 point);
+
+t_hit_info	ray_hit_plane(const t_ray *ray, const void *elem);
+t_hit_info	ray_hit_sphere(const t_ray *ray, const void *elem);
+t_hit_info	ray_hit_cylinder(const t_ray *ray, const void *elem);
+t_hit_info	ray_hit_cone(const t_ray *ray, const void *elem);
+t_hit_info	intersect_cone_body(const t_ray *ray, const t_cone *cone);
+t_hit_info	intersect_cone_cap(const t_ray *ray, const t_cone *cone);
+
+void		compute_cone_quadratic(const t_cone *cone, const t_ray *ray, \
+												t_real3 x, t_real coefs[3]);
+bool		solve_quadratic(t_real coefs[3], t_real *t1, t_real *t2);
+
+#endif
